@@ -1,20 +1,22 @@
 const startupDebugger = require('debug')('app: startup');
 const dbDebugger = require('debug')('app: db');
-require('./dbconncection');
+const dbconncection = require('./dbconncection');
 const config = require('config');
 const mogran = require('morgan');
 const helmet = require('helmet');
 const Joi = require('joi');
-const logger = require('./logger');
+const logger = require('./middleware/logger');
+const courses = require('./routes/courses');
+const home = require('./routes/home');
 const express = require('express');
 const app = express();
-const itemModel=require('./db.model')
-
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(express.static('public'));
 app.use(helmet());
+app.use('/api/courses', courses);
+app.use('/', home);
 
 // Configuration
 // console.log(`Application name: ${config.get('name')}`);
@@ -23,105 +25,103 @@ app.use(helmet());
 
 
 
-// if(app.get('env') == 'development'){
-//     app.use(mogran('tiny'));
-//     startupDebugger('morgan enabled');
+if(app.get('env') == 'development'){
+    app.use(mogran('tiny'));
+    startupDebugger('morgan enabled');
     
-// }
-
-// //Db work
-// dbDebugger('Db connected successfully!');
+};
 
 
-// app.use(logger);  //custom midleware
+app.use(logger);  //custom midleware
 
 //home
-app.get('/', (req, res)=>{
-    res.send('App works!');
-});
+// router.get('/', (req, res)=>{
+//     res.send('App works!');
+// });
 
-app.get('/api/post',(req,res,next)=>{
-   const item=new itemModel();
-   item.id=1;
-   item.name="dilbar";
-   item.save((err,docs)=>{
-       if(!err){
-         console.log("pushed to db");
-       }
-       else{
-           console.log("something went wrong");
-       }
-   })
-})
 
-//get request to fetch one data
-app.get('/api/courses',(req,res)=>{
-    itemModel.findOne({ name: 'dilbar' },(err,docs)=>{
-        if(!err){
-            console.log("docs",docs);
-            res.json(docs);
-        }
-        else{
-            console.log("something went wrong");
-        } 
-    })
-});
+// app.get('/api/post',(req,res,next)=>{
+//    const item=new itemModel();
+//    item.id=1;
+//    item.name="dilbar";
+//    item.save((err,docs)=>{
+//        if(!err){
+//          console.log("pushed to db");
+//        }
+//        else{
+//            console.log("something went wrong");
+//        }
+//    })
+// })
 
-app.get('/api/courses/:id', (req, res) =>{
-    const course = courses.find(c=>{
-        return c.id == req.params.id;
-    });
+// //get request to fetch one data
+// app.get('/api/courses',(req,res)=>{
+//     itemModel.findOne({ name: 'dilbar' },(err,docs)=>{
+//         if(!err){
+//             console.log("docs",docs);
+//             res.json(docs);
+//         }
+//         else{
+//             console.log("something went wrong");
+//         } 
+//     })
+// });
 
-    if(!course) res.status(404).send('The Course with the given ID was not found!');
-    res.send(course);
-});
+// app.get('/api/courses/:id', (req, res) =>{
+//     const course = courses.find(c=>{
+//         return c.id == req.params.id;
+//     });
 
-app.post('/api/courses', (req, res) => {
+//     if(!course) res.status(404).send('The Course with the given ID was not found!');
+//     res.send(course);
+// });
+
+// app.post('/api/courses', (req, res) => {
     
-    const schema = {
-        name: Joi.string().min(3).required()
-    }
+//     const schema = {
+//         name: Joi.string().min(3).required()
+//     }
 
-    const result = Joi.validate(req.body, schema);
-    if(result.error){
-        res.status(404).send(result.error.details[0].message);
-        return;
-    }
+//     const result = Joi.validate(req.body, schema);
+//     if(result.error){
+//         res.status(404).send(result.error.details[0].message);
+//         return;
+//     }
     
-    const course = {
-        id: courses.length + 1,
-        name: req.body.name
-    }
-    courses.push(course);
-    res.send(course);
-});
+//     const course = {
+//         id: courses.length + 1,
+//         name: req.body.name
+//     }
+//     courses.push(course);
+//     res.send(course);
+// });
 
-app.put('/api/courses/:id', (req, res) => {
-    const course = courses.find(c=>{
-        return c.id == parseInt(req.params.id);
-    });
+// app.put('/api/courses/:id', (req, res) => {
+//     const course = courses.find(c=>{
+//         return c.id == parseInt(req.params.id);
+//     });
 
-    if(!course){
-        res.status(404).send('course to update not found!');
-        return;
-    }
+//     if(!course){
+//         res.status(404).send('course to update not found!');
+//         return;
+//     }
 
-    const result = validateCourse(req.body);
-    if(result.error){
-        res.status(400).send('Invalid update request!');
-        return;
-    }
+//     const result = validateCourse(req.body);
+//     if(result.error){
+//         res.status(400).send('Invalid update request!');
+//         return;
+//     }
 
-    course.name = req.body.name;
-    res.send(course);
-});
+//     course.name = req.body.name;
+//     res.send(course);
+// });
 
-function validateCourse(course){
-    const schema = {
-        name: Joi.string().min(3).required()
-    }
-    return Joi.validate(course, schema);
-}
+// function validateCourse(course){
+//     const schema = {
+//         name: Joi.string().min(3).required()
+//     }
+//     return Joi.validate(course, schema);
+// }
 
 
 const port = process.env.port || 3000;
