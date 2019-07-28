@@ -35,15 +35,11 @@ app.use(helmet());
 
 // app.use(logger);  //custom midleware
 
-// const courses = [
-//     { id: 1, name: 'course-1' },
-//     { id: 2, name: 'course-2' },
-//     { id: 3, name: 'course-3' }
-// ]
+//home
+app.get('/', (req, res)=>{
+    res.send('App works!');
+});
 
-// app.get('/', (req, res)=>{
-//     res.send('Hello world');
-// });
 app.get('/api/post',(req,res,next)=>{
    const item=new itemModel();
    item.id=1;
@@ -57,19 +53,18 @@ app.get('/api/post',(req,res,next)=>{
        }
    })
 })
-app.get('/api/get',(err,docs)=>{
+
+//get request to fetch one data
+app.get('/api/courses',(req,res)=>{
     itemModel.findOne({ name: 'dilbar' },(err,docs)=>{
         if(!err){
             console.log("docs",docs);
+            res.json(docs);
         }
         else{
             console.log("something went wrong");
         } 
     })
-})
-
-app.get('/api/courses', (req, res)=>{
-    res.send(courses);
 });
 
 app.get('/api/courses/:id', (req, res) =>{
