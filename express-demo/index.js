@@ -1,6 +1,6 @@
 const startupDebugger = require('debug')('app: startup');
 const dbDebugger = require('debug')('app: db');
-
+require('./dbconncection');
 const config = require('config');
 const mogran = require('morgan');
 const helmet = require('helmet');
@@ -8,6 +8,7 @@ const Joi = require('joi');
 const logger = require('./logger');
 const express = require('express');
 const app = express();
+const itemModel=require('./db.model')
 
 
 app.use(express.json());
@@ -22,27 +23,50 @@ app.use(helmet());
 
 
 
-if(app.get('env') == 'development'){
-    app.use(mogran('tiny'));
-    startupDebugger('morgan enabled');
+// if(app.get('env') == 'development'){
+//     app.use(mogran('tiny'));
+//     startupDebugger('morgan enabled');
     
-}
+// }
 
-//Db work
-dbDebugger('Db connected successfully!');
+// //Db work
+// dbDebugger('Db connected successfully!');
 
 
-app.use(logger);  //custom midleware
+// app.use(logger);  //custom midleware
 
-const courses = [
-    { id: 1, name: 'course-1' },
-    { id: 2, name: 'course-2' },
-    { id: 3, name: 'course-3' }
-]
+// const courses = [
+//     { id: 1, name: 'course-1' },
+//     { id: 2, name: 'course-2' },
+//     { id: 3, name: 'course-3' }
+// ]
 
-app.get('/', (req, res)=>{
-    res.send('Hello world');
-});
+// app.get('/', (req, res)=>{
+//     res.send('Hello world');
+// });
+app.get('/api/post',(req,res,next)=>{
+   const item=new itemModel();
+   item.id=1;
+   item.name="dilbar";
+   item.save((err,docs)=>{
+       if(!err){
+         console.log("pushed to db");
+       }
+       else{
+           console.log("something went wrong");
+       }
+   })
+})
+app.get('/api/get',(err,docs)=>{
+    itemModel.findOne({ name: 'dilbar' },(err,docs)=>{
+        if(!err){
+            console.log("docs",docs);
+        }
+        else{
+            console.log("something went wrong");
+        } 
+    })
+})
 
 app.get('/api/courses', (req, res)=>{
     res.send(courses);
