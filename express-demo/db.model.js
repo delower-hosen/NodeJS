@@ -1,21 +1,27 @@
-// const mongoose = require("mongoose");
-// var itemSchema = new mongoose.Schema({
-//   id: {
-//     type: String
-//   },
-//   name: {
-//     type: String
-//   }
-// });
-// module.exports = mongoose.model("items", itemSchema);
-
 const mongoose = require('mongoose');
 const courseSchema = new mongoose.Schema({
-  name: String,
-  author: String,
-  tags: String ,
+  name: {
+    type: String,
+    required: true,
+    minlength: 3,
+    maxlength: 255
+  },
+  author: {
+    type: String,
+    required: true,
+    minlength: 3,
+    maxlength: 255
+  },
+  price:{
+    type: Number,
+    required: true,
+    min: 1
+  },
   date: { type: Date, default: Date.now },
-  isPublished: Boolean
+  imageurl: {
+    type: String,
+    required: true
+  }
 });
 
 module.exports = mongoose.model('course', courseSchema);

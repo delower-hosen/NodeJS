@@ -5,13 +5,7 @@ const Course = require('./../db.model');
 
 router.use(express.json());
 
-// const courses = [
-//     { id: 1, name: 'couse-1'},
-//     { id: 2, name: 'couse-2'},
-//     { id: 3, name: 'couse-3'}
-// ]
-
-//http get request to fetch one data /api/courses/
+//get request to fetch one data /api/courses/
 router.get('/',(req,res)=>{
     const courses = Course.find({}, (err, docs)=>{
         if(!err){
@@ -23,13 +17,20 @@ router.get('/',(req,res)=>{
     });
 });
 
-//http post request /api/courses/
+//post request /api/courses/
 router.post('/', (req, res) => {
+     
+    const result = validateCourse(req.body);
+    if(result.error){
+        res.status(404).send(result.error.details[0].message);
+        return;
+    }
+
     const course = new Course({
         name: req.body.name,
         author: req.body.author,
-        tags: req.body.tags,
-        isPublished: req.body.isPublished
+        price: req.body.price,
+        imageurl: req.body.imageurl
     });
 
     course.save((err, docs)=>{
@@ -38,72 +39,68 @@ router.post('/', (req, res) => {
             res.json(docs);
         }
         else console.log('something went wrong');
+        res.send(err.message);
     });
-    
-    // const schema = {
-    //     name: Joi.string().min(3).required()
-    // }
-
-    // const result = Joi.validate(req.body, schema);
-    // if(result.error){
-    //     res.status(404).send(result.error.details[0].message);
-    //     return;
-    // }
-    
-    // const course = {
-    //     id: courses.length + 1,
-    //     name: req.body.name
-    // }
-    // courses.push(course);
-    // res.send(course);
 });
 
-//http put request /api/courses/:id
+//put request /api/courses/:id
 router.put('/:id', (req, res) => {
-    const course = courses.find(c=>{
-        return c.id == parseInt(req.params.id);
-    });
-
-    if(!course){
-        res.status(404).send('course to update not found!');
-        return;
-    }
-
     const result = validateCourse(req.body);
     if(result.error){
         res.status(400).send('Invalid update request!');
         return;
     }
 
-    course.name = req.body.name;
-    res.send(course);
+    const course = Course.findById(req.params.id, (err, docs)=>{
+        if(!err){
+            docs.set({
+                name: req.body.name? req.body.name : docs.name,
+                author: req.body.author? req.body.author : docs.author,
+                tags: req.body.tags? req.body.tags : docs.tags,
+                isPublished: req.body.isPublished? req.body.isPublished : docs.isPublished
+            });
+            docs.save();
+            res.json(docs);
+            console.log('course was updated successfully!');
+        } else{
+            console.log('something wrong!');
+            res.status(404).send('course to update not found!');
+        }
+    });
+
 });
 
-//http delete /api/courses/:id
+//delete /api/courses/:id
 router.delete('/:id', (req, res)=>{
-    const course = courses.find(c=>{
-        return c.id == req.params.id;
+    const course = Course.findByIdAndRemove(req.params.id, (err, docs)=>{
+        if(!err){
+            console.log('Deleted successfully!');
+            res.json(docs);
+        } else{
+            res.status(404).send('The Course with the given ID was not found!');
+        }
     });
-    if(!course) res.status(404).send('The Course with the given ID was not found!');
-    const index = courses.indexOf(course);
-    courses.splice(index, 1);
-    res.send(course);
 });
 
-//http get request specific id /api/courses/:id
+//get request specific id /api/courses/:id
 router.get('/:id', (req, res) =>{
-    const course = courses.find(c=>{
-        return c.id == req.params.id;
+    const course = Course.findById(req.params.id, (err, docs)=>{
+        if(!err){
+            res.json(docs);
+        } else{
+            console.log('The course with the given id was not found!');
+            res.status(404).send('The Course with the given ID was not found!');
+        }
     });
-
-    if(!course) res.status(404).send('The Course with the given ID was not found!');
-    res.send(course);
 });
 
 
 function validateCourse(course){
     const schema = {
-        name: Joi.string().min(3).required()
+        name: Joi.string().min(3).required(),
+        author: Joi.string().min(3).required(),
+        price: Joi.number().integer().min(1).required(),
+        imageurl: Joi.string().required()
     }
     return Joi.validate(course, schema);
 }
