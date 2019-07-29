@@ -5,24 +5,25 @@ const config = require('config');
 const mogran = require('morgan');
 const helmet = require('helmet');
 const Joi = require('joi');
+const bodyParser = require('body-parser');
 const logger = require('./middleware/logger');
-const courses = require('./routes/courses');
+const books = require('./routes/books');
 const home = require('./routes/home');
 const express = require('express');
+const cors = require('cors');
 const app = express();
 
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+app.use(bodyParser.json());
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(express.static('public'));
 app.use(helmet());
-app.use('/api/courses', courses);
+app.use('/api/books', books);
 app.use('/', home);
-
-// Configuration
-// console.log(`Application name: ${config.get('name')}`);
-// console.log(`Application name: ${config.get('mail.host')}`);
-// console.log(`Mail Password: ${config.get('mail.password')}`);
-
 
 
 if(app.get('env') == 'development'){ //environment specific 

@@ -1,23 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const Joi = require('joi');
-const Course = require('./../db.model');
+const Book = require('./../db.model');
 
 router.use(express.json());
 
-//get request to fetch one data /api/courses/
+//get request to fetch one data /api/books/
 router.get('/',(req,res)=>{
-    const courses = Course.find({}, (err, docs)=>{
+    const books = Book.find({}, (err, docs)=>{
         if(!err){
-            console.log(docs);
+            // console.log(docs);
             res.json(docs);
         } else{
+            res.status(404).send('something went wrong!')
             console.log('something went wrong!');
         }
     });
 });
 
-//post request /api/courses/
+//post request /api/books/
 router.post('/', (req, res) => {
      
     const result = validateCourse(req.body);
@@ -26,16 +27,16 @@ router.post('/', (req, res) => {
         return;
     }
 
-    const course = new Course({
+    const book = new Book({
         name: req.body.name,
         author: req.body.author,
         price: req.body.price,
         imageurl: req.body.imageurl
     });
 
-    course.save((err, docs)=>{
+    book.save((err, docs)=>{
         if(!err){
-            console.log('course has been pushed to database!');
+            console.log('book has been pushed to database!');
             res.json(docs);
         }
         else console.log('something went wrong');
@@ -43,7 +44,7 @@ router.post('/', (req, res) => {
     });
 });
 
-//put request /api/courses/:id
+//put request /api/books/:id
 router.put('/:id', (req, res) => {
     const result = validateCourse(req.body);
     if(result.error){
@@ -51,40 +52,40 @@ router.put('/:id', (req, res) => {
         return;
     }
 
-    const course = Course.findById(req.params.id, (err, docs)=>{
+    const book = Book.findById(req.params.id, (err, docs)=>{
         if(!err){
             docs.set({
                 name: req.body.name? req.body.name : docs.name,
                 author: req.body.author? req.body.author : docs.author,
-                tags: req.body.tags? req.body.tags : docs.tags,
-                isPublished: req.body.isPublished? req.body.isPublished : docs.isPublished
+                price: req.body.price? req.body.price : docs.price,
+                imageurl: req.body.imageurl? req.body.imageurl : docs.imageurl
             });
             docs.save();
             res.json(docs);
-            console.log('course was updated successfully!');
+            console.log('book was updated successfully!');
         } else{
             console.log('something wrong!');
-            res.status(404).send('course to update not found!');
+            res.status(404).send('book to update not found!');
         }
     });
 
 });
 
-//delete /api/courses/:id
+//delete /api/books/:id
 router.delete('/:id', (req, res)=>{
-    const course = Course.findByIdAndRemove(req.params.id, (err, docs)=>{
+    const book = Book.findByIdAndRemove(req.params.id, (err, docs)=>{
         if(!err){
             console.log('Deleted successfully!');
             res.json(docs);
         } else{
-            res.status(404).send('The Course with the given ID was not found!');
+            res.status(404).send('The books with the given ID was not found!');
         }
     });
 });
 
-//get request specific id /api/courses/:id
+//get request specific id /api/books/:id
 router.get('/:id', (req, res) =>{
-    const course = Course.findById(req.params.id, (err, docs)=>{
+    const book = Book.findById(req.params.id, (err, docs)=>{
         if(!err){
             res.json(docs);
         } else{
@@ -95,14 +96,14 @@ router.get('/:id', (req, res) =>{
 });
 
 
-function validateCourse(course){
+function validateCourse(book){
     const schema = {
         name: Joi.string().min(3).required(),
         author: Joi.string().min(3).required(),
         price: Joi.number().integer().min(1).required(),
         imageurl: Joi.string().required()
     }
-    return Joi.validate(course, schema);
+    return Joi.validate(book, schema);
 }
 
 module.exports = router;

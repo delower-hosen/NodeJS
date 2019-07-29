@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const courseSchema = new mongoose.Schema({
+const bookSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -24,4 +24,4 @@ const courseSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('course', courseSchema);
+module.exports = mongoose.model('book', bookSchema);
