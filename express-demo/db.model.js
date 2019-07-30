@@ -17,7 +17,7 @@ const bookSchema = new mongoose.Schema({
     required: true,
     min: 1
   },
-  date: { type: Date, default: Date.now },
+  date: { type: Date },
   imageurl: {
     type: String,
     required: true

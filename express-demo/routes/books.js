@@ -5,11 +5,12 @@ const Book = require('./../db.model');
 
 router.use(express.json());
 
+
 //get request to fetch one data /api/books/
 router.get('/',(req,res)=>{
     const books = Book.find({}, (err, docs)=>{
         if(!err){
-            // console.log(docs);
+            console.log(docs);
             res.json(docs);
         } else{
             res.status(404).send('something went wrong!')
@@ -20,6 +21,7 @@ router.get('/',(req,res)=>{
 
 //post request /api/books/
 router.post('/', (req, res) => {
+     console.log(`post request arrived! ${req.body.name}`);
      
     const result = validateCourse(req.body);
     if(result.error){
@@ -31,7 +33,8 @@ router.post('/', (req, res) => {
         name: req.body.name,
         author: req.body.author,
         price: req.body.price,
-        imageurl: req.body.imageurl
+        imageurl: req.body.imageurl,
+        date: req.body.date
     });
 
     book.save((err, docs)=>{
@@ -39,8 +42,10 @@ router.post('/', (req, res) => {
             console.log('book has been pushed to database!');
             res.json(docs);
         }
-        else console.log('something went wrong');
-        res.send(err.message);
+        else {
+            console.log('something went wrong!');
+            res.send(err.message);
+        }
     });
 });
 
@@ -58,7 +63,8 @@ router.put('/:id', (req, res) => {
                 name: req.body.name? req.body.name : docs.name,
                 author: req.body.author? req.body.author : docs.author,
                 price: req.body.price? req.body.price : docs.price,
-                imageurl: req.body.imageurl? req.body.imageurl : docs.imageurl
+                imageurl: req.body.imageurl? req.body.imageurl : docs.imageurl,
+                date: req.body.date? req.body.date : docs.date
             });
             docs.save();
             res.json(docs);
@@ -101,7 +107,8 @@ function validateCourse(book){
         name: Joi.string().min(3).required(),
         author: Joi.string().min(3).required(),
         price: Joi.number().integer().min(1).required(),
-        imageurl: Joi.string().required()
+        imageurl: Joi.string().required(),
+        date: Joi.date()
     }
     return Joi.validate(book, schema);
 }
