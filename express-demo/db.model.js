@@ -21,6 +21,9 @@ const bookSchema = new mongoose.Schema({
   imageurl: {
     type: String,
     required: true
+  },
+  bookid: {
+    type: String
   }
 });
 

@@ -34,7 +34,8 @@ router.post('/', (req, res) => {
         author: req.body.author,
         price: req.body.price,
         imageurl: req.body.imageurl,
-        date: req.body.date
+        date: req.body.date,
+        bookid: req.body.bookid
     });
 
     book.save((err, docs)=>{
@@ -64,7 +65,8 @@ router.put('/:id', (req, res) => {
                 author: req.body.author? req.body.author : docs.author,
                 price: req.body.price? req.body.price : docs.price,
                 imageurl: req.body.imageurl? req.body.imageurl : docs.imageurl,
-                date: req.body.date? req.body.date : docs.date
+                date: req.body.date? req.body.date : docs.date,
+                bookid: req.body.bookid? req.body.bookid : docs.bookid
             });
             docs.save();
             res.json(docs);
@@ -108,7 +110,8 @@ function validateCourse(book){
         author: Joi.string().min(3).required(),
         price: Joi.number().integer().min(1).required(),
         imageurl: Joi.string().required(),
-        date: Joi.date()
+        date: Joi.date(),
+        bookid: Joi.string()
     }
     return Joi.validate(book, schema);
 }
