@@ -10,7 +10,6 @@ router.use(express.json());
 router.get('/',(req,res)=>{
     const books = Book.find({}, (err, docs)=>{
         if(!err){
-            // console.log(docs);
             res.json(docs);
         } else{
             res.status(404).send('something went wrong!')
