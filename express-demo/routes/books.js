@@ -10,7 +10,7 @@ router.use(express.json());
 router.get('/',(req,res)=>{
     const books = Book.find({}, (err, docs)=>{
         if(!err){
-            console.log(docs);
+            // console.log(docs);
             res.json(docs);
         } else{
             res.status(404).send('something went wrong!')
@@ -66,7 +66,8 @@ router.put('/:id', (req, res) => {
                 price: req.body.price? req.body.price : docs.price,
                 imageurl: req.body.imageurl? req.body.imageurl : docs.imageurl,
                 date: req.body.date? req.body.date : docs.date,
-                bookid: req.body.bookid? req.body.bookid : docs.bookid
+                bookid: req.body.bookid? req.body.bookid : docs.bookid,
+                _id: req.body._id? req.body._id : docs._id
             });
             docs.save();
             res.json(docs);
@@ -81,7 +82,9 @@ router.put('/:id', (req, res) => {
 
 //delete /api/books/:id
 router.delete('/:id', (req, res)=>{
-    const book = Book.findByIdAndRemove(req.params.id, (err, docs)=>{
+    console.log(req.params.id);
+    
+    const book = Book.findByIdAndRemove({_id: req.params.id}, (err, docs)=>{
         if(!err){
             console.log('Deleted successfully!');
             res.json(docs);
@@ -111,7 +114,8 @@ function validateCourse(book){
         price: Joi.number().integer().min(1).required(),
         imageurl: Joi.string().required(),
         date: Joi.date(),
-        bookid: Joi.string()
+        bookid: Joi.string(),
+        _id: Joi.string()
     }
     return Joi.validate(book, schema);
 }
