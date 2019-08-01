@@ -1,10 +1,10 @@
 const express = require('express');
+const _ = require('lodash');
 const router = express.Router();
 const Joi = require('joi');
-const Book = require('./../db.model');
+const Book = require('../model/book.model');
 
 router.use(express.json());
-
 
 //get request to fetch one data /api/books/
 router.get('/',(req,res)=>{
@@ -20,22 +20,13 @@ router.get('/',(req,res)=>{
 
 //post request /api/books/
 router.post('/', (req, res) => {
-     console.log(`post request arrived! ${req.body.name}`);
-     
     const result = validateCourse(req.body);
     if(result.error){
         res.status(404).send(result.error.details[0].message);
         return;
     }
 
-    const book = new Book({
-        name: req.body.name,
-        author: req.body.author,
-        price: req.body.price,
-        imageurl: req.body.imageurl,
-        date: req.body.date,
-        bookid: req.body.bookid
-    });
+    const book = new Book(_.pick(req.body, ['name', 'author', 'price', 'imageurl', 'date', 'bookid']));
 
     book.save((err, docs)=>{
         if(!err){
@@ -59,15 +50,7 @@ router.put('/:id', (req, res) => {
 
     const book = Book.findById(req.params.id, (err, docs)=>{
         if(!err){
-            docs.set({
-                name: req.body.name? req.body.name : docs.name,
-                author: req.body.author? req.body.author : docs.author,
-                price: req.body.price? req.body.price : docs.price,
-                imageurl: req.body.imageurl? req.body.imageurl : docs.imageurl,
-                date: req.body.date? req.body.date : docs.date,
-                bookid: req.body.bookid? req.body.bookid : docs.bookid,
-                _id: req.body._id? req.body._id : docs._id
-            });
+            docs.set(_.pick(req.body, ['name', 'author', 'price', 'imageurl', 'date', 'bookid','_id']));
             docs.save();
             res.json(docs);
             console.log('book was updated successfully!');

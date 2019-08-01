@@ -1,6 +1,6 @@
 const startupDebugger = require('debug')('app: startup');
 const dbDebugger = require('debug')('app: db');
-const dbconncection = require('./dbconncection');
+const dbconncection = require('./database-connection/dbconncection');
 const config = require('config');
 const mogran = require('morgan');
 const helmet = require('helmet');
@@ -9,6 +9,8 @@ const bodyParser = require('body-parser');
 const logger = require('./middleware/logger');
 const books = require('./routes/books');
 const home = require('./routes/home');
+const users = require('./routes/users');
+const login = require('./routes/login');
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -24,12 +26,13 @@ app.use(express.static('public'));
 app.use(helmet());
 app.use('/api/books', books);
 app.use('/', home);
+app.use('/api/users', users);
+app.use('/api/login', login);
 
 
 if(app.get('env') == 'development'){ //environment specific 
     app.use(mogran('tiny'));
     startupDebugger('morgan enabled');
-    
 };
 
 
