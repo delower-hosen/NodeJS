@@ -1,3 +1,4 @@
+const auth = require('./../middleware/auth');
 const express = require('express');
 const _ = require('lodash');
 const router = express.Router();
@@ -7,7 +8,7 @@ const Book = require('../model/book.model');
 router.use(express.json());
 
 //get request to fetch one data /api/books/
-router.get('/',(req,res)=>{
+router.get('/', (req,res)=>{
     const books = Book.find({}, (err, docs)=>{
         if(!err){
             res.json(docs);
@@ -19,7 +20,7 @@ router.get('/',(req,res)=>{
 });
 
 //post request /api/books/
-router.post('/', (req, res) => {
+router.post('/', auth, (req, res) => {
     const result = validateCourse(req.body);
     if(result.error){
         res.status(404).send(result.error.details[0].message);

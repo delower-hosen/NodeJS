@@ -1,4 +1,7 @@
+const auth = require('./../middleware/auth');
 const express = require('express');
+const config = require('config');
+const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
@@ -7,6 +10,11 @@ const Joi = require('joi');
 const User = require('../model/user.model');
 
 router.use(express.json());
+
+router.get('/me', auth, async(req, res, next)=>{
+    const user = await User.findById(req.user._id).select('-password');
+    res.send(user);
+});
 
 //registering new user
 router.post('/', (req, res) => {
@@ -24,7 +32,8 @@ router.post('/', (req, res) => {
                 user.password = hash;
                 user.save((err, docs)=>{
                     if(!err){
-                        res.json(_.pick(docs, ['_id', 'name', 'email']));
+                        const token = jwt.sign({ _id: docs._id, name: docs.name }, config.get('jwtPrivateKey'));
+                        res.header('x-authentication-token', token).send(_.pick(docs, ['_id', 'name', 'email']));
                     }
                     else{
                         res.send(err.message);
