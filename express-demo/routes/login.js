@@ -24,7 +24,7 @@ router.post('/', (req, res) => {
         }
         else if(docs){
             bcrypt.compare(req.body.password, docs.password, (err, validPassword)=> {
-                if(!validPassword) return res.status(400).send('Invalid email or password!');
+                if(!validPassword) res.status(400).send('Invalid email or password!');
                 else{
                     const token = jwt.sign({ _id: docs._id, name: docs.name }, config.get('jwtPrivateKey'));
                     res.json(token);
