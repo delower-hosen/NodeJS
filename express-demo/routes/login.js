@@ -20,14 +20,15 @@ router.post('/', (req, res) => {
 
     User.findOne({email: req.body.email}, (err, docs)=>{
         if(!docs){
-            return res.status(400).send('Invalid email or password!');
+            // return res.status(400).json({isInvalid: true});
+            return res.json({isInvalid: true});
         }
         else if(docs){
             bcrypt.compare(req.body.password, docs.password, (err, validPassword)=> {
-                if(!validPassword) res.status(400).send('Invalid email or password!');
+                if(!validPassword) return res.json({isInvalid: true});
                 else{
                     const token = jwt.sign({ _id: docs._id, name: docs.name }, config.get('jwtPrivateKey'));
-                    res.json(token);
+                    return res.json(token);
                 }
             });
         }
