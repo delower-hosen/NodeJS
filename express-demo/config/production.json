@@ -1,6 +1,5 @@
 {
-    "name": "My Express App - Production",
-    "mail":{
-        "host": "prod-mail-server"
-    }
+    "name": "My Express App - Development",
+    "email": "delower.hosen00@gmail.com",
+    "password": "del1304104"
 }

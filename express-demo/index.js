@@ -42,6 +42,8 @@ if(app.get('env') == 'development'){ //environment specific
 
 
 app.use(logger);  //custom midleware
+// console.log(config.get('name'));
+
 
 const port = process.env.port || 3000;
 app.listen(port, ()=>{
