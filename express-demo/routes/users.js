@@ -45,12 +45,15 @@ router.post("/", (req, res) => {
               }
             });
 
+            // const token = jwt.sign({_id: docs._id, name: docs.name}, config.get("jwtPrivateKey"));
+            const id = docs._id;
+            const url = `http://localhost:3000/api/confirmation/${id}`;
+
             var mailOptions = {
               from: `${config.get('email')}`,
               to: `${user.email}`,
-              subject: 'Sending Email using Node.js',
-              text: `Hi Smartherd, thank you for your nice Node.js tutorials.
-          I will donate 50$ for this course. Please send me payment options.`
+              subject: 'Verify your email for bookshop account.',
+              html: `Please click this link to confirm your email: <button><a href= "${url}">Confirm mail</a></button>`
               // html: '<h1>Hi Smartherd</h1><p>Your Messsage</p>'        
             };
 
@@ -62,9 +65,6 @@ router.post("/", (req, res) => {
               }
             });
             //mail sending done
-
-            const token = jwt.sign({_id: docs._id, name: docs.name}, config.get("jwtPrivateKey"));
-            res.header("x-authentication-token", token).send(_.pick(docs, ["_id", "name", "email"]));
           } else {
             console.log(err);
             res.json(err);

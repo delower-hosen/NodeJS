@@ -11,6 +11,7 @@ const books = require('./routes/books');
 const home = require('./routes/home');
 const users = require('./routes/users');
 const login = require('./routes/login');
+const confirmation = require('./routes/confirmation');
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -33,6 +34,7 @@ app.use('/api/books', books);
 app.use('/', home);
 app.use('/api/users', users);
 app.use('/api/login', login);
+app.use('/api/confirmation', confirmation);
 
 
 if(app.get('env') == 'development'){ //environment specific 

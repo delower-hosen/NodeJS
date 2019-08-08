@@ -20,10 +20,9 @@ router.post('/', (req, res) => {
 
     User.findOne({email: req.body.email}, (err, docs)=>{
         if(!docs){
-            // return res.status(400).json({isInvalid: true});
             return res.json({isInvalid: true});
         }
-        else if(docs){
+        else if(docs && docs.isVerified){
             bcrypt.compare(req.body.password, docs.password, (err, validPassword)=> {
                 if(!validPassword) return res.json({isInvalid: true});
                 else{
@@ -31,6 +30,10 @@ router.post('/', (req, res) => {
                     return res.json(token);
                 }
             });
+        }
+        else if(docs.isVerified==false){
+            console.log('user verified na');
+            res.send('user verified na')
         }
     });
 
