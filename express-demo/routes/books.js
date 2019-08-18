@@ -1,4 +1,5 @@
 const auth = require('./../middleware/auth');
+const admin = require('./../middleware/admin');
 const express = require('express');
 const _ = require('lodash');
 const router = express.Router();
@@ -8,19 +9,18 @@ const Book = require('../model/book.model');
 router.use(express.json());
 
 //get request to fetch one data /api/books/
-router.get('/', (req,res)=>{
+router.get('/', auth, (req,res)=>{
     const books = Book.find({}, (err, docs)=>{
         if(!err){
             res.json(docs);
         } else{
             res.status(404).send('something went wrong!')
-            console.log('something went wrong!');
         }
     });
 });
 
 //post request /api/books/
-router.post('/', auth, (req, res) => {
+router.post('/', [auth, admin], (req, res) => {
     const result = validateCourse(req.body);
     if(result.error){
         res.status(404).send(result.error.details[0].message);
@@ -42,7 +42,7 @@ router.post('/', auth, (req, res) => {
 });
 
 //put request /api/books/:id
-router.put('/:id', (req, res) => {
+router.put('/:id', [auth, admin], (req, res) => {
     const result = validateCourse(req.body);
     if(result.error){
         res.status(400).send('Invalid update request!');
@@ -64,7 +64,7 @@ router.put('/:id', (req, res) => {
 });
 
 //delete /api/books/:id
-router.delete('/:id', (req, res)=>{
+router.delete('/:id', [auth, admin], (req, res)=>{
     console.log(req.params.id);
     
     const book = Book.findByIdAndRemove({_id: req.params.id}, (err, docs)=>{
@@ -78,7 +78,7 @@ router.delete('/:id', (req, res)=>{
 });
 
 //get request specific id /api/books/:id
-router.get('/:id', (req, res) =>{
+router.get('/:id', [auth, admin], (req, res) =>{
     const book = Book.findById(req.params.id, (err, docs)=>{
         if(!err){
             res.json(docs);

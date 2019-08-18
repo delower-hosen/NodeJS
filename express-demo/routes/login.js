@@ -26,14 +26,14 @@ router.post('/', (req, res) => {
             bcrypt.compare(req.body.password, docs.password, (err, validPassword)=> {
                 if(!validPassword) return res.json({isInvalid: true});
                 else{
-                    const token = jwt.sign({ _id: docs._id, name: docs.name }, config.get('jwtPrivateKey'));
+                    const token = jwt.sign({ _id: docs._id, name: docs.name, isAdmin: docs.isAdmin }, config.get('jwtPrivateKey'));
                     return res.json(token);
                 }
             });
         }
-        else if(docs.isVerified==false){
+        else if(!docs.isVerified){
             console.log('user verified na');
-            res.send('user verified na')
+            return res.json({isInvalid: true});
         }
     });
 

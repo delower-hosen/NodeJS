@@ -13,11 +13,11 @@ router.get('/:id', (req, res) => {
            if(!err){
                docs.isVerified = true;
                docs.save();
-               console.log(`${docs} book was updated successfully!`);
+               console.log(`Activation successful`);
                return res.redirect('http://localhost:4200/login');
            } else{
-               console.log('sball hoi nakne');
-               
+               console.log('Activation failed!');
+               return res.status(400).json('Activation failed!');
            }
        })
     

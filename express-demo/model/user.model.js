@@ -23,11 +23,9 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  passwordResetToken: {
-    type: String
-  },
-  passwordResetExpires: {
-    type: Date
+  isAdmin: {
+    type: Boolean,
+    default: false
   }
 
 });

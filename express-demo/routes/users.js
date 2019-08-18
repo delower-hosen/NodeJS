@@ -12,6 +12,7 @@ const User = require("../model/user.model");
 
 router.use(express.json());
 
+//getting logged in user
 router.get("/me", auth, async (req, res, next) => {
   const user = await User.findById(req.user._id).select("-password");
   res.send(user);
@@ -22,7 +23,6 @@ router.post("/", (req, res) => {
   const result = validateCourse(req.body);
   console.log(result);
   if (result.error) {
-    // res.status(400).send(`Bad request! ${result.error.details[0].message}`);
     return res.json({
       isInvalid: true
     });
@@ -45,7 +45,6 @@ router.post("/", (req, res) => {
               }
             });
 
-            // const token = jwt.sign({_id: docs._id, name: docs.name}, config.get("jwtPrivateKey"));
             const id = docs._id;
             const url = `http://localhost:3000/api/confirmation/${id}`;
 
@@ -53,8 +52,7 @@ router.post("/", (req, res) => {
               from: `${config.get('email')}`,
               to: `${user.email}`,
               subject: 'Verify your email for bookshop account.',
-              html: `Please click this link to confirm your email: <button><a href= "${url}">Confirm mail</a></button>`
-              // html: '<h1>Hi Smartherd</h1><p>Your Messsage</p>'        
+              html: `Please click this link to confirm your email: <button><a href= "${url}">Confirm mail</a></button>`       
             };
 
             transporter.sendMail(mailOptions, function (error, info) {
