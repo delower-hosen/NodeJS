@@ -16,10 +16,10 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
-if(!config.get('jwtPrivateKey')){
-    console.log('FATAL ERROR: jwtPrivateKey is not defined!');
-    process.exit(1);
-}
+// if(!config.get('jwtPrivateKey')){
+//     console.log('FATAL ERROR: jwtPrivateKey is not defined!');
+//     process.exit(1);
+// }
 
 app.use(bodyParser.urlencoded({
     extended: true
@@ -49,5 +49,5 @@ app.use(logger);  //custom midleware
 
 const port = process.env.port || 3000;
 app.listen(port, ()=>{
-    console.log(`listening on port ${port}`);
+    console.log(`Running on port ${port}`);
 });

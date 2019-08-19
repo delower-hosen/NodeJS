@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "set bookshop_jwtPrivateKey=dfj && nodemon index.js"
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "Delower Hosen",
